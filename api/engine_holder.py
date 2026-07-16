@@ -131,11 +131,18 @@ class EngineHolder:
     # ── image URLs ────────────────────────────────────────────────────────────
 
     def image_url(self, image_id: str) -> str:
-        """Public URL for an image: CDN base when configured, else the
-        locally-mounted /local-images static route."""
+        """Public URL for an image.
+
+        Priority: explicit CDN base -> relative "/images/<id>" when S3-backed
+        (the same CloudFront distribution that fronts this API serves /images/*
+        from the bucket, so relative URLs resolve in the browser and no
+        CloudFront<->EC2 config cycle exists) -> local static mount for dev.
+        """
         base = self._settings.IMAGE_BASE_URL
         if base:
             return f"{base.rstrip('/')}/images/{image_id}"
+        if self._settings.S3_BUCKET:
+            return f"/images/{image_id}"
         return f"/local-images/{self._local_filename(image_id)}"
 
     def _local_filename(self, image_id: str) -> str:
