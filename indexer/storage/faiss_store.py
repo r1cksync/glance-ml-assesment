@@ -232,6 +232,26 @@ class FaissStore(VectorStore):
         record = self._images.get(image_id)
         return record["attributes"] if record is not None else None
 
+    # ── vector readback (FAISS-specific; used by zero-shot attribute inference) ──
+
+    def scene_vector(self, image_id: str) -> Optional[np.ndarray]:
+        record = self._images.get(image_id)
+        if record is None:
+            return None
+        return self._scene_index.reconstruct(int(record["scene_id"]))
+
+    def garment_vectors(self, image_id: str) -> list[tuple[str, np.ndarray]]:
+        """[(region_id, vector), ...] for an image (IndexIDMap2.reconstruct)."""
+        record = self._images.get(image_id)
+        if record is None:
+            return []
+        out: list[tuple[str, np.ndarray]] = []
+        for fid in record["garment_ids"]:
+            meta = self._garment_meta.get(int(fid))
+            if meta is not None:
+                out.append((meta[1], self._garment_index.reconstruct(int(fid))))
+        return out
+
     def get_regions(self, image_id: str) -> list[RegionRecord]:
         record = self._images.get(image_id)
         return list(record["regions"]) if record is not None else []
