@@ -1,0 +1,15 @@
+# Pure-python test dependencies for CI (no torch/transformers — unit tests
+# must run without heavy model stacks).
+pytest
+pydantic
+pyyaml
+numpy
+faiss-cpu
+fastapi
+httpx
+pyjwt
+argon2-cffi
+slowapi
+pillow
+python-multipart
+pydantic-settings

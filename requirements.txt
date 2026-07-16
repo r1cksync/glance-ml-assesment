@@ -1,0 +1,34 @@
+# Full local/indexing environment (GPU-capable). Server-only deps: api/requirements.txt
+# torch/torchvision installed separately:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+transformers>=4.45
+open_clip_torch>=2.24
+accelerate>=0.30
+bitsandbytes>=0.43          # 4-bit VLM quantization (Windows-compatible)
+qwen-vl-utils>=0.0.8
+einops
+timm
+
+pillow>=10.0
+numpy>=1.26
+faiss-cpu>=1.8
+scikit-learn
+
+pydantic>=2.6
+pydantic-settings>=2.2
+pyyaml
+tqdm
+requests
+
+fastapi>=0.110
+uvicorn[standard]
+python-multipart
+httpx
+pyjwt>=2.8
+argon2-cffi
+slowapi
+
+boto3                        # adapters/scripts/api only — never in ML logic
+onnxruntime
+
+pytest>=8.0

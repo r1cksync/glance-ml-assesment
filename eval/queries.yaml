@@ -1,0 +1,18 @@
+# The five acceptance queries (fixed by the assignment brief), with stable ids.
+# `notes` records the official category of each query.
+queries:
+  - id: q1
+    text: "A person in a bright yellow raincoat."
+    notes: "attribute-specific"
+  - id: q2
+    text: "Professional business attire inside a modern office."
+    notes: "contextual"
+  - id: q3
+    text: "Someone wearing a blue shirt sitting on a park bench."
+    notes: "complex-semantic"
+  - id: q4
+    text: "Casual weekend outfit for a city walk."
+    notes: "style-inference"
+  - id: q5
+    text: "A red tie and a white shirt in a formal setting."
+    notes: "compositional"

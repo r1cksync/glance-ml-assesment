@@ -1,0 +1,15 @@
+# dependencies
+node_modules/
+
+# next.js build output
+.next/
+out/
+
+# misc
+*.tsbuildinfo
+.DS_Store
+
+# local env files (only .env.example is committed)
+.env
+.env.local
+.env.*.local

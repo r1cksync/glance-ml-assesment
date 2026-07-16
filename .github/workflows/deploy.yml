@@ -1,0 +1,119 @@
+# CI/CD: test -> build+push API image -> restart API via SSM -> deploy frontend.
+#
+# The deploy jobs only run when repo secrets are configured:
+#   AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY   -> build-deploy
+#   AMPLIFY_APP_ID / API_URL                    -> frontend
+# (secrets are not usable in job-level `if`, so the test job exports gates.)
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPO: fashion-retrieval-api
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    outputs:
+      has_aws: ${{ steps.gate.outputs.has_aws }}
+      has_amplify: ${{ steps.gate.outputs.has_amplify }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install test dependencies
+        run: pip install -r requirements-ci.txt
+
+      - name: Run tests
+        run: pytest -q
+
+      - name: Export deploy gates
+        id: gate
+        run: |
+          echo "has_aws=${{ secrets.AWS_ACCESS_KEY_ID != '' }}" >> "$GITHUB_OUTPUT"
+          echo "has_amplify=${{ secrets.AMPLIFY_APP_ID != '' && secrets.API_URL != '' }}" >> "$GITHUB_OUTPUT"
+
+  build-deploy:
+    needs: test
+    if: needs.test.outputs.has_aws == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push API image
+        run: |
+          IMAGE="${{ steps.ecr.outputs.registry }}/${ECR_REPO}:latest"
+          docker build -f api/Dockerfile -t "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Restart API via SSM (instance tagged Name=fashion-retrieval-api)
+        run: |
+          aws ssm send-command \
+            --targets "Key=tag:Name,Values=fashion-retrieval-api" \
+            --document-name "AWS-RunShellScript" \
+            --comment "deploy latest api image" \
+            --parameters 'commands=["systemctl restart fashion-api"]'
+
+  frontend:
+    needs: [test, build-deploy]
+    if: needs.test.outputs.has_amplify == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Build static frontend
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.API_URL }}
+        run: |
+          npm ci
+          npm run build
+          (cd out && zip -qr ../deploy.zip .)
+
+      - name: Deploy to Amplify (manual deployment)
+        env:
+          APP_ID: ${{ secrets.AMPLIFY_APP_ID }}
+        run: |
+          set -euo pipefail
+          DEPLOY=$(aws amplify create-deployment --app-id "$APP_ID" --branch-name main)
+          JOB_ID=$(echo "$DEPLOY" | jq -r .jobId)
+          UPLOAD_URL=$(echo "$DEPLOY" | jq -r .zipUploadUrl)
+          curl -sf -H "Content-Type: application/zip" -T frontend/deploy.zip "$UPLOAD_URL"
+          aws amplify start-deployment --app-id "$APP_ID" --branch-name main --job-id "$JOB_ID" >/dev/null
+          for _ in $(seq 1 60); do
+            STATUS=$(aws amplify get-job --app-id "$APP_ID" --branch-name main --job-id "$JOB_ID" \
+              --query 'job.summary.status' --output text)
+            echo "status: $STATUS"
+            if [ "$STATUS" = "SUCCEED" ]; then exit 0; fi
+            if [ "$STATUS" = "FAILED" ] || [ "$STATUS" = "CANCELLED" ]; then exit 1; fi
+            sleep 5
+          done
+          echo "timed out waiting for amplify job"
+          exit 1
