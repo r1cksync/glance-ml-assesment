@@ -1,0 +1,758 @@
+{
+  "meta": {
+    "garment_backend": "fashion-clip",
+    "scene_backend": "clip-vit-b32",
+    "fusion_weights": {
+      "garment": 0.55,
+      "scene": 0.25,
+      "attribute": 0.2
+    },
+    "k_values": [
+      1,
+      5,
+      10
+    ]
+  },
+  "variants": {
+    "vanilla-clip-whole": {
+      "k_values": [
+        1,
+        5,
+        10
+      ],
+      "per_query": [
+        {
+          "id": "q1",
+          "text": "A person in a bright yellow raincoat.",
+          "notes": "attribute-specific",
+          "labeled": true,
+          "n_relevant": 6,
+          "ranked": [
+            "e636280e96f3863157a4398c92fc299e.jpg",
+            "supp_yellow_raincoat_00.jpg",
+            "de8af016793ce1f2170e1ae785ed78ee.jpg",
+            "ef9dae290756a8dbcb1cde404da00a1a.jpg",
+            "supp_yellow_raincoat_01.jpg",
+            "1c1b439e448879f805e8c827605ec96b.jpg",
+            "ce25fc2ea56c29c024e96686099373b5.jpg",
+            "b246457b56c522682a2400286ca834ec.jpg",
+            "320e6497373a2f91a108044407c69a9e.jpg",
+            "a4f806e6b45ed0ac339db298ee287b44.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.16666666666666666,
+            "recall@5": 0.5,
+            "recall@10": 0.5,
+            "mrr": 1.0,
+            "ndcg@10": 0.6105858728157117
+          }
+        },
+        {
+          "id": "q2",
+          "text": "Professional business attire inside a modern office.",
+          "notes": "contextual",
+          "labeled": true,
+          "n_relevant": 8,
+          "ranked": [
+            "supp_office_attire_05.jpg",
+            "cd0f34921f96592811ff3a3776fa0444.jpg",
+            "7fc8a54146a81b33f348f21ad07fa141.jpg",
+            "supp_office_attire_03.jpg",
+            "supp_red_tie_01.jpg",
+            "supp_office_attire_01.jpg",
+            "supp_office_attire_02.jpg",
+            "supp_red_tie_00.jpg",
+            "609b9fc370f7c98fbb6a41baf72664a1.jpg",
+            "1ca4458d23522f006de2ffda045c3b44.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.0,
+            "recall@5": 0.375,
+            "recall@10": 0.75,
+            "mrr": 0.5,
+            "ndcg@10": 0.6205859458485142
+          }
+        },
+        {
+          "id": "q3",
+          "text": "Someone wearing a blue shirt sitting on a park bench.",
+          "notes": "complex-semantic",
+          "labeled": true,
+          "n_relevant": 2,
+          "ranked": [
+            "supp_park_casual_02.jpg",
+            "supp_park_casual_05.jpg",
+            "supp_park_casual_00.jpg",
+            "supp_park_casual_01.jpg",
+            "supp_park_casual_04.jpg",
+            "supp_park_casual_07.jpg",
+            "supp_park_casual_08.jpg",
+            "supp_park_casual_10.jpg",
+            "cd9737f2cf0967f12cc001d57568e913.jpg",
+            "70e000fc740fd51671f257453e5d4ef1.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.0,
+            "recall@5": 0.0,
+            "recall@10": 0.5,
+            "mrr": 0.14285714285714285,
+            "ndcg@10": 0.20438239758848611
+          }
+        },
+        {
+          "id": "q4",
+          "text": "Casual weekend outfit for a city walk.",
+          "notes": "style-inference",
+          "labeled": true,
+          "n_relevant": 13,
+          "ranked": [
+            "609b9fc370f7c98fbb6a41baf72664a1.jpg",
+            "7450a0ad431b3446ab57608050095649.jpg",
+            "3641da2171647a07f88dae8d53c9a6a3.jpg",
+            "5a45019f91a09b34caad0730b77f281d.jpg",
+            "014eadcd4cf28a669232d4b6470e4e01.jpg",
+            "3bf082a96a03a1c8f75e1d1d0ebf42d2.jpg",
+            "bbb7c11a2a4fe731a371cdf9e223c360.jpg",
+            "f90c231e3eab5e147368c77592b6a7f7.jpg",
+            "81d5078514e93327f0ef0461be35faa6.jpg",
+            "fa6fe8a772afec21850eaf4cf5fc72fd.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.0,
+            "recall@5": 0.0,
+            "recall@10": 0.07692307692307693,
+            "mrr": 0.1,
+            "ndcg@10": 0.06362078819895171
+          }
+        },
+        {
+          "id": "q5",
+          "text": "A red tie and a white shirt in a formal setting.",
+          "notes": "compositional",
+          "labeled": true,
+          "n_relevant": 7,
+          "ranked": [
+            "supp_red_tie_00.jpg",
+            "supp_red_tie_01.jpg",
+            "supp_red_tie_14.jpg",
+            "supp_red_tie_03.jpg",
+            "supp_red_tie_02.jpg",
+            "914d8db66c7d852b32df43fedfe1ed58.jpg",
+            "7fc8a54146a81b33f348f21ad07fa141.jpg",
+            "supp_office_attire_00.jpg",
+            "supp_office_attire_05.jpg",
+            "28cc10255347d209843aa9a595eaed69.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.14285714285714285,
+            "recall@5": 0.42857142857142855,
+            "recall@10": 0.42857142857142855,
+            "mrr": 1.0,
+            "ndcg@10": 0.5666867828578933
+          }
+        }
+      ],
+      "means": {
+        "recall@1": 0.06190476190476191,
+        "recall@5": 0.26071428571428573,
+        "recall@10": 0.4510989010989011,
+        "mrr": 0.5485714285714286,
+        "ndcg@10": 0.4131723574619114
+      },
+      "n_queries": 5,
+      "n_labeled": 5
+    },
+    "fashionclip-whole": {
+      "k_values": [
+        1,
+        5,
+        10
+      ],
+      "per_query": [
+        {
+          "id": "q1",
+          "text": "A person in a bright yellow raincoat.",
+          "notes": "attribute-specific",
+          "labeled": true,
+          "n_relevant": 6,
+          "ranked": [
+            "e636280e96f3863157a4398c92fc299e.jpg",
+            "supp_yellow_raincoat_01.jpg",
+            "ef9dae290756a8dbcb1cde404da00a1a.jpg",
+            "supp_yellow_raincoat_00.jpg",
+            "supp_yellow_raincoat_02.jpg",
+            "supp_city_casual_02.jpg",
+            "supp_yellow_raincoat_03.jpg",
+            "24f1db5265b04819c05c271ffb22a0ef.jpg",
+            "320e6497373a2f91a108044407c69a9e.jpg",
+            "supp_yellow_raincoat_04.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.16666666666666666,
+            "recall@5": 0.6666666666666666,
+            "recall@10": 0.8333333333333334,
+            "mrr": 1.0,
+            "ndcg@10": 0.8283813528274905
+          }
+        },
+        {
+          "id": "q2",
+          "text": "Professional business attire inside a modern office.",
+          "notes": "contextual",
+          "labeled": true,
+          "n_relevant": 8,
+          "ranked": [
+            "supp_office_attire_00.jpg",
+            "4dc413ef5a47c5da696ba2f72835e6ed.jpg",
+            "8ffb6a0c280839553fa4025f3135d178.jpg",
+            "supp_office_attire_01.jpg",
+            "05df29d770955d6fe8d7873982aba082.jpg",
+            "supp_office_attire_03.jpg",
+            "efbbe5ebcc3c3ab9c8cea01fbeefded5.jpg",
+            "supp_office_attire_05.jpg",
+            "supp_office_attire_02.jpg",
+            "supp_red_tie_01.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.125,
+            "recall@5": 0.25,
+            "recall@10": 0.625,
+            "mrr": 1.0,
+            "ndcg@10": 0.6012393831990742
+          }
+        },
+        {
+          "id": "q3",
+          "text": "Someone wearing a blue shirt sitting on a park bench.",
+          "notes": "complex-semantic",
+          "labeled": true,
+          "n_relevant": 2,
+          "ranked": [
+            "supp_park_casual_01.jpg",
+            "supp_park_casual_07.jpg",
+            "supp_park_casual_04.jpg",
+            "supp_park_casual_02.jpg",
+            "supp_park_casual_00.jpg",
+            "supp_park_casual_08.jpg",
+            "d3288584fffb4caeb8a392304b09ce93.jpg",
+            "supp_park_casual_03.jpg",
+            "e9e415310c10ee05c1ebbf0f013c9269.jpg",
+            "supp_park_casual_14.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.0,
+            "recall@5": 0.0,
+            "recall@10": 1.0,
+            "mrr": 0.16666666666666666,
+            "ndcg@10": 0.4227898344066503
+          }
+        },
+        {
+          "id": "q4",
+          "text": "Casual weekend outfit for a city walk.",
+          "notes": "style-inference",
+          "labeled": true,
+          "n_relevant": 13,
+          "ranked": [
+            "08680e1257c83a5a603ae3ef67ef3dde.jpg",
+            "4d3fd642c9d08290f6262759a51d252f.jpg",
+            "39fc64de6a2304536b0cf18e4de97f98.jpg",
+            "afb8182ab6475db9830b0afafb442f55.jpg",
+            "75850809cabb412eb28ff5b9c732cc5e.jpg",
+            "7450a0ad431b3446ab57608050095649.jpg",
+            "5a45019f91a09b34caad0730b77f281d.jpg",
+            "2171b137ca967fb6540ce50fc824aaa4.jpg",
+            "6b6582dc900f463d0fc31a95c3fbeb49.jpg",
+            "0544acba02e8776a56fde74f83633c21.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.0,
+            "recall@5": 0.0,
+            "recall@10": 0.0,
+            "mrr": 0.0,
+            "ndcg@10": 0.0
+          }
+        },
+        {
+          "id": "q5",
+          "text": "A red tie and a white shirt in a formal setting.",
+          "notes": "compositional",
+          "labeled": true,
+          "n_relevant": 7,
+          "ranked": [
+            "supp_red_tie_01.jpg",
+            "supp_red_tie_00.jpg",
+            "supp_red_tie_02.jpg",
+            "cf8fbb58ce182fb9976486509e220efd.jpg",
+            "bd4c2ae0478c2162033a02216e394604.jpg",
+            "858395fd6b5e8111aaa523922c1d68fb.jpg",
+            "supp_red_tie_04.jpg",
+            "supp_red_tie_03.jpg",
+            "supp_red_tie_05.jpg",
+            "6096b12d8fc996b65b4b9947b18502ca.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.14285714285714285,
+            "recall@5": 0.2857142857142857,
+            "recall@10": 0.5714285714285714,
+            "mrr": 1.0,
+            "ndcg@10": 0.6177638397019701
+          }
+        }
+      ],
+      "means": {
+        "recall@1": 0.0869047619047619,
+        "recall@5": 0.24047619047619045,
+        "recall@10": 0.605952380952381,
+        "mrr": 0.6333333333333333,
+        "ndcg@10": 0.494034882027037
+      },
+      "n_queries": 5,
+      "n_labeled": 5
+    },
+    "fashionclip-regions": {
+      "k_values": [
+        1,
+        5,
+        10
+      ],
+      "per_query": [
+        {
+          "id": "q1",
+          "text": "A person in a bright yellow raincoat.",
+          "notes": "attribute-specific",
+          "labeled": true,
+          "n_relevant": 6,
+          "ranked": [
+            "supp_yellow_raincoat_01.jpg",
+            "supp_yellow_raincoat_00.jpg",
+            "de8af016793ce1f2170e1ae785ed78ee.jpg",
+            "e636280e96f3863157a4398c92fc299e.jpg",
+            "b24d298f9856f105bb3f3bb645b59dd9.jpg",
+            "supp_yellow_raincoat_04.jpg",
+            "1c1b439e448879f805e8c827605ec96b.jpg",
+            "supp_yellow_raincoat_06.jpg",
+            "supp_yellow_raincoat_02.jpg",
+            "ec87f9472aa1aa6a6fb6fa44add1357a.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.16666666666666666,
+            "recall@5": 0.5,
+            "recall@10": 1.0,
+            "mrr": 1.0,
+            "ndcg@10": 0.9181890364255552
+          }
+        },
+        {
+          "id": "q2",
+          "text": "Professional business attire inside a modern office.",
+          "notes": "contextual",
+          "labeled": true,
+          "n_relevant": 8,
+          "ranked": [
+            "supp_office_attire_01.jpg",
+            "1ca4458d23522f006de2ffda045c3b44.jpg",
+            "supp_park_casual_00.jpg",
+            "7edab506f7628da58ac683b6b9554d2d.jpg",
+            "supp_office_attire_04.jpg",
+            "517a8397f4b67050adbbb77fc38d94f3.jpg",
+            "8edb034e1536833519aa3ba46d0f8a4c.jpg",
+            "a9c817161fda6df41766dfe80e939c6b.jpg",
+            "6129a289fa99fd43988c56cf0271e345.jpg",
+            "supp_red_tie_01.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.125,
+            "recall@5": 0.125,
+            "recall@10": 0.25,
+            "mrr": 1.0,
+            "ndcg@10": 0.3260595412115671
+          }
+        },
+        {
+          "id": "q3",
+          "text": "Someone wearing a blue shirt sitting on a park bench.",
+          "notes": "complex-semantic",
+          "labeled": true,
+          "n_relevant": 2,
+          "ranked": [
+            "supp_park_casual_08.jpg",
+            "af525e61e3575651154f2b0e9772f48c.jpg",
+            "f06777ee045a0762aad3a7ec3111b864.jpg",
+            "6de0db96e14807a6824c20a3e4985fa9.jpg",
+            "97d77f8581dbbd6534ffd92e382b0700.jpg",
+            "c0e497b92b65779f0c2491827d3e0060.jpg",
+            "d14b58173e059b7d5592cc3eb115e1a4.jpg",
+            "59e06fb924b0f433d0aed18b3469beec.jpg",
+            "6cbc18fcb13a5381bf4eeebaea71ec43.jpg",
+            "fa6fe8a772afec21850eaf4cf5fc72fd.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.5,
+            "recall@5": 0.5,
+            "recall@10": 0.5,
+            "mrr": 1.0,
+            "ndcg@10": 0.6131471927654584
+          }
+        },
+        {
+          "id": "q4",
+          "text": "Casual weekend outfit for a city walk.",
+          "notes": "style-inference",
+          "labeled": true,
+          "n_relevant": 13,
+          "ranked": [
+            "443f8997ca02a0a2a2dc1eb82f0a9f06.jpg",
+            "c20cd495aea72107c49299e4f957ef2b.jpg",
+            "5c02879d04dacef50fe83f81243788df.jpg",
+            "c7a789f6eaa33502f0d3d17a69c07732.jpg",
+            "8edb034e1536833519aa3ba46d0f8a4c.jpg",
+            "0bbaa62211cc48b57957aab152fba023.jpg",
+            "cef7317d699eb4899f181a570b1502e0.jpg",
+            "45225483e305abaac3bc54c3dce0723e.jpg",
+            "82d90f72c9745665b559a423f5e4e101.jpg",
+            "0146a53e12d690914995248fb6872121.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.0,
+            "recall@5": 0.07692307692307693,
+            "recall@10": 0.23076923076923078,
+            "mrr": 0.2,
+            "ndcg@10": 0.21501812929496175
+          }
+        },
+        {
+          "id": "q5",
+          "text": "A red tie and a white shirt in a formal setting.",
+          "notes": "compositional",
+          "labeled": true,
+          "n_relevant": 7,
+          "ranked": [
+            "67ec64b00cd3aa7ab1d92c59e5d8fd85.jpg",
+            "1c1b439e448879f805e8c827605ec96b.jpg",
+            "supp_red_tie_05.jpg",
+            "supp_red_tie_03.jpg",
+            "supp_red_tie_00.jpg",
+            "50ebf72d1294ac64c8ff95ba81d05be7.jpg",
+            "supp_red_tie_02.jpg",
+            "35980d446169c38a1ebe02324dc0df36.jpg",
+            "supp_red_tie_01.jpg",
+            "1fd63362ced55967a97a324928583339.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.0,
+            "recall@5": 0.42857142857142855,
+            "recall@10": 0.5714285714285714,
+            "mrr": 0.3333333333333333,
+            "ndcg@10": 0.44490366174805823
+          }
+        }
+      ],
+      "means": {
+        "recall@1": 0.15833333333333333,
+        "recall@5": 0.3260989010989011,
+        "recall@10": 0.5104395604395604,
+        "mrr": 0.7066666666666668,
+        "ndcg@10": 0.5034635122891201
+      },
+      "n_queries": 5,
+      "n_labeled": 5
+    },
+    "regions+attr-filter": {
+      "k_values": [
+        1,
+        5,
+        10
+      ],
+      "per_query": [
+        {
+          "id": "q1",
+          "text": "A person in a bright yellow raincoat.",
+          "notes": "attribute-specific",
+          "labeled": true,
+          "n_relevant": 6,
+          "ranked": [
+            "e636280e96f3863157a4398c92fc299e.jpg",
+            "supp_yellow_raincoat_01.jpg",
+            "supp_yellow_raincoat_00.jpg",
+            "9171c0d10e43e4b5987a705e552568d7.jpg",
+            "bfabcacd46568489e6ae0d4952ecccf9.jpg",
+            "de8af016793ce1f2170e1ae785ed78ee.jpg",
+            "1c1b439e448879f805e8c827605ec96b.jpg",
+            "supp_yellow_raincoat_04.jpg",
+            "b246457b56c522682a2400286ca834ec.jpg",
+            "supp_yellow_raincoat_02.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.16666666666666666,
+            "recall@5": 0.5,
+            "recall@10": 0.8333333333333334,
+            "mrr": 1.0,
+            "ndcg@10": 0.8277566336180305
+          }
+        },
+        {
+          "id": "q2",
+          "text": "Professional business attire inside a modern office.",
+          "notes": "contextual",
+          "labeled": true,
+          "n_relevant": 8,
+          "ranked": [
+            "supp_office_attire_01.jpg",
+            "supp_office_attire_03.jpg",
+            "1ca4458d23522f006de2ffda045c3b44.jpg",
+            "supp_office_attire_04.jpg",
+            "cd0f34921f96592811ff3a3776fa0444.jpg",
+            "94351b1b66b1e37756eef9206883dd83.jpg",
+            "8d7d73888f69989aa8f72013f945ff50.jpg",
+            "supp_office_attire_02.jpg",
+            "supp_red_tie_01.jpg",
+            "supp_red_tie_03.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.125,
+            "recall@5": 0.375,
+            "recall@10": 0.75,
+            "mrr": 1.0,
+            "ndcg@10": 0.7394380922514556
+          }
+        },
+        {
+          "id": "q3",
+          "text": "Someone wearing a blue shirt sitting on a park bench.",
+          "notes": "complex-semantic",
+          "labeled": true,
+          "n_relevant": 2,
+          "ranked": [
+            "6cbc18fcb13a5381bf4eeebaea71ec43.jpg",
+            "6de0db96e14807a6824c20a3e4985fa9.jpg",
+            "supp_park_casual_07.jpg",
+            "d14b58173e059b7d5592cc3eb115e1a4.jpg",
+            "supp_park_casual_08.jpg",
+            "af525e61e3575651154f2b0e9772f48c.jpg",
+            "01d0251b5bc5a41f93c86042c56258d3.jpg",
+            "cd9737f2cf0967f12cc001d57568e913.jpg",
+            "supp_park_casual_14.jpg",
+            "48acf4105e66abe3ae57901e15d08e25.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.0,
+            "recall@5": 0.5,
+            "recall@10": 0.5,
+            "mrr": 0.2,
+            "ndcg@10": 0.23719771276929622
+          }
+        },
+        {
+          "id": "q4",
+          "text": "Casual weekend outfit for a city walk.",
+          "notes": "style-inference",
+          "labeled": true,
+          "n_relevant": 13,
+          "ranked": [
+            "0229bef01efc25f915374d55f59cbfdd.jpg",
+            "82d90f72c9745665b559a423f5e4e101.jpg",
+            "9f2b43ca80f1efb145dc87cb63efbb85.jpg",
+            "0146a53e12d690914995248fb6872121.jpg",
+            "0bbaa62211cc48b57957aab152fba023.jpg",
+            "e712b9ad744015f1208a2b6eee27afcf.jpg",
+            "e1f4adf88b71b15a4aaa6a32c6fa0d4a.jpg",
+            "163316c8653449a9af4e731ac3aedaf7.jpg",
+            "320930dcc25cc8552bba966eff2d06c4.jpg",
+            "8edb034e1536833519aa3ba46d0f8a4c.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.07692307692307693,
+            "recall@5": 0.3076923076923077,
+            "recall@10": 0.6153846153846154,
+            "mrr": 1.0,
+            "ndcg@10": 0.8454256604216017
+          }
+        },
+        {
+          "id": "q5",
+          "text": "A red tie and a white shirt in a formal setting.",
+          "notes": "compositional",
+          "labeled": true,
+          "n_relevant": 7,
+          "ranked": [
+            "supp_red_tie_01.jpg",
+            "supp_red_tie_14.jpg",
+            "supp_red_tie_00.jpg",
+            "supp_red_tie_02.jpg",
+            "supp_red_tie_03.jpg",
+            "supp_red_tie_05.jpg",
+            "914d8db66c7d852b32df43fedfe1ed58.jpg",
+            "supp_red_tie_13.jpg",
+            "supp_office_attire_05.jpg",
+            "supp_park_casual_11.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.14285714285714285,
+            "recall@5": 0.42857142857142855,
+            "recall@10": 0.7142857142857143,
+            "mrr": 1.0,
+            "ndcg@10": 0.7032779342457537
+          }
+        }
+      ],
+      "means": {
+        "recall@1": 0.10228937728937729,
+        "recall@5": 0.42225274725274725,
+        "recall@10": 0.6826007326007326,
+        "mrr": 0.8400000000000001,
+        "ndcg@10": 0.6706192066612274
+      },
+      "n_queries": 5,
+      "n_labeled": 5
+    },
+    "full+rerank": {
+      "k_values": [
+        1,
+        5,
+        10
+      ],
+      "per_query": [
+        {
+          "id": "q1",
+          "text": "A person in a bright yellow raincoat.",
+          "notes": "attribute-specific",
+          "labeled": true,
+          "n_relevant": 6,
+          "ranked": [
+            "e636280e96f3863157a4398c92fc299e.jpg",
+            "supp_yellow_raincoat_00.jpg",
+            "supp_yellow_raincoat_01.jpg",
+            "supp_yellow_raincoat_02.jpg",
+            "supp_yellow_raincoat_04.jpg",
+            "supp_yellow_raincoat_03.jpg",
+            "supp_yellow_raincoat_06.jpg",
+            "ef9dae290756a8dbcb1cde404da00a1a.jpg",
+            "9171c0d10e43e4b5987a705e552568d7.jpg",
+            "bfabcacd46568489e6ae0d4952ecccf9.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.16666666666666666,
+            "recall@5": 0.8333333333333334,
+            "recall@10": 1.0,
+            "mrr": 1.0,
+            "ndcg@10": 0.9930783166417602
+          }
+        },
+        {
+          "id": "q2",
+          "text": "Professional business attire inside a modern office.",
+          "notes": "contextual",
+          "labeled": true,
+          "n_relevant": 8,
+          "ranked": [
+            "cd0f34921f96592811ff3a3776fa0444.jpg",
+            "supp_office_attire_01.jpg",
+            "supp_office_attire_03.jpg",
+            "supp_office_attire_04.jpg",
+            "1ca4458d23522f006de2ffda045c3b44.jpg",
+            "supp_office_attire_02.jpg",
+            "94351b1b66b1e37756eef9206883dd83.jpg",
+            "8d7d73888f69989aa8f72013f945ff50.jpg",
+            "supp_red_tie_01.jpg",
+            "supp_red_tie_03.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.125,
+            "recall@5": 0.375,
+            "recall@10": 0.75,
+            "mrr": 1.0,
+            "ndcg@10": 0.7783633190900432
+          }
+        },
+        {
+          "id": "q3",
+          "text": "Someone wearing a blue shirt sitting on a park bench.",
+          "notes": "complex-semantic",
+          "labeled": true,
+          "n_relevant": 2,
+          "ranked": [
+            "d3288584fffb4caeb8a392304b09ce93.jpg",
+            "4ba624616f54007236995b5ed5d330e2.jpg",
+            "2782426d99e5e0ab2555378e29953c9e.jpg",
+            "02916664cd606bb5486353f200a475a3.jpg",
+            "1918cddd5d05e007637c1b635eb683f5.jpg",
+            "77e9eefca9b24d5d5b2ca7a43d1fc1ce.jpg",
+            "b5c8c768b2bc55ca312ffcbdabbc4acd.jpg",
+            "fa9077a968d2fd593b3999aad7f54231.jpg",
+            "89144779b3e40421facdb2eb70309356.jpg",
+            "4f2a2c16e1c284c1dc11cb987c9f5ca0.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.5,
+            "recall@5": 0.5,
+            "recall@10": 0.5,
+            "mrr": 1.0,
+            "ndcg@10": 0.6131471927654584
+          }
+        },
+        {
+          "id": "q4",
+          "text": "Casual weekend outfit for a city walk.",
+          "notes": "style-inference",
+          "labeled": true,
+          "n_relevant": 13,
+          "ranked": [
+            "82d90f72c9745665b559a423f5e4e101.jpg",
+            "0229bef01efc25f915374d55f59cbfdd.jpg",
+            "9f2b43ca80f1efb145dc87cb63efbb85.jpg",
+            "0146a53e12d690914995248fb6872121.jpg",
+            "0bbaa62211cc48b57957aab152fba023.jpg",
+            "e712b9ad744015f1208a2b6eee27afcf.jpg",
+            "fa6fe8a772afec21850eaf4cf5fc72fd.jpg",
+            "e1f4adf88b71b15a4aaa6a32c6fa0d4a.jpg",
+            "163316c8653449a9af4e731ac3aedaf7.jpg",
+            "8edb034e1536833519aa3ba46d0f8a4c.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.07692307692307693,
+            "recall@5": 0.3076923076923077,
+            "recall@10": 0.6153846153846154,
+            "mrr": 1.0,
+            "ndcg@10": 0.8486026589039899
+          }
+        },
+        {
+          "id": "q5",
+          "text": "A red tie and a white shirt in a formal setting.",
+          "notes": "compositional",
+          "labeled": true,
+          "n_relevant": 7,
+          "ranked": [
+            "supp_red_tie_03.jpg",
+            "supp_red_tie_01.jpg",
+            "8ffb6a0c280839553fa4025f3135d178.jpg",
+            "supp_red_tie_00.jpg",
+            "3745efe8958e34ca0e5dbab9362a68da.jpg",
+            "5d7f5a1b4d12d8931d03c3e7e1060689.jpg",
+            "38ce0a95a84489c35fc8f5e145205584.jpg",
+            "5e9bc1602c42a055f7e8626fc23776a8.jpg",
+            "47c2e3e2ff0bfcacd0b42339314862d3.jpg",
+            "35980d446169c38a1ebe02324dc0df36.jpg"
+          ],
+          "metrics": {
+            "recall@1": 0.14285714285714285,
+            "recall@5": 0.42857142857142855,
+            "recall@10": 0.42857142857142855,
+            "mrr": 1.0,
+            "ndcg@10": 0.5666867828578933
+          }
+        }
+      ],
+      "means": {
+        "recall@1": 0.2022893772893773,
+        "recall@5": 0.48891941391941396,
+        "recall@10": 0.6587912087912088,
+        "mrr": 1.0,
+        "ndcg@10": 0.759975654051829
+      },
+      "n_queries": 5,
+      "n_labeled": 5
+    }
+  }
+}

@@ -24,6 +24,7 @@ import numpy as np
 import torch
 
 from indexer.models.base import EmbeddingModel
+from indexer.models.clip_models import _as_feature_tensor  # transformers v4/v5 shim
 from indexer.models.device import resolve_device
 
 if TYPE_CHECKING:  # PIL only needed for type checking here
@@ -69,7 +70,7 @@ class HFCLIPEmbedder(EmbeddingModel):
         for i in range(0, len(images), self.batch_size):
             batch = [im.convert("RGB") for im in images[i:i + self.batch_size]]
             inputs = self._processor(images=batch, return_tensors="pt").to(self.device)
-            feats = self._model.get_image_features(**inputs)
+            feats = _as_feature_tensor(self._model.get_image_features(**inputs))
             chunks.append(feats.float().cpu().numpy())
         if not chunks:
             return np.zeros((0, self.dim), dtype=np.float32)
@@ -84,7 +85,7 @@ class HFCLIPEmbedder(EmbeddingModel):
                 text=texts[i:i + self.batch_size],
                 return_tensors="pt", padding=True, truncation=True,
             ).to(self.device)
-            feats = self._model.get_text_features(**inputs)
+            feats = _as_feature_tensor(self._model.get_text_features(**inputs))
             chunks.append(feats.float().cpu().numpy())
         if not chunks:
             return np.zeros((0, self.dim), dtype=np.float32)

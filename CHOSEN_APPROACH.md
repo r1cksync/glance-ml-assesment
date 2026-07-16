@@ -55,11 +55,35 @@ box over the image. You can *see* that "red tie" matched the tie region and
 
 ## Measured results
 
-See [eval/results/ablations.md](eval/results/ablations.md) — the ablation ladder
-(vanilla CLIP → FashionCLIP whole-image → region-based → +attribute filter →
-+rerank) on the 5 acceptance queries with hand-labeled relevance sets, plus the
-FashionCLIP vs marqo-fashionSigLIP benchmark and
-[latency + 1M-image scaling math](eval/results/latency.md).
+Ablation ladder on the 5 acceptance queries, hand-labeled relevance sets
+(pooled-candidate contact sheets, human-judged; corpus = 1,158 Fashionpedia val
++ 45 CC-licensed supplements for thin categories):
+
+| variant | R@1 | R@5 | R@10 | MRR | nDCG@10 |
+|---|---|---|---|---|---|
+| vanilla CLIP ViT-B/32, whole image | 0.062 | 0.261 | 0.451 | 0.549 | 0.413 |
+| FashionCLIP, whole image | 0.087 | 0.241 | 0.606 | 0.633 | 0.494 |
+| FashionCLIP, garment regions | 0.158 | 0.326 | 0.510 | 0.707 | 0.504 |
+| + attribute prefilter & fusion | 0.102 | 0.422 | **0.683** | 0.840 | 0.671 |
+| **+ BLIP-ITM rerank (full)** | **0.202** | **0.489** | 0.659 | **1.000** | **0.760** |
+
+Reading the ladder:
+- **Fashion-domain fine-tuning helps** (+0.08 nDCG over vanilla CLIP) but is
+  nowhere near sufficient — whole-image vectors still can't bind attributes.
+- **Regions raise precision** (MRR .63→.71): garment similarity is now measured
+  on garment pixels.
+- **The structural stage is the big jump** (nDCG .50→.67, MRR→.84): conjunctive
+  attribute predicates + scene fusion is what actually answers compositional
+  and contextual queries.
+- **Rerank buys top-rank quality** (MRR→1.00: the #1 result is relevant for
+  *every* acceptance query; R@1 doubles) at the cost of a little tail recall
+  (R@10 .68→.66) — exactly the precision/recall trade a top-heavy cross-encoder
+  should make.
+
+Companion numbers: FashionCLIP vs marqo-fashionSigLIP in
+[eval/results/embedder_benchmark.md](eval/results/embedder_benchmark.md),
+[latency + 1M-image scaling math](eval/results/latency.md)
+(live deployment: p50 811 ms / p95 988 ms end-to-end).
 
 The compositionality guarantee is also a unit test
 (`tests/test_compositionality.py`): swapped color-garment bindings return

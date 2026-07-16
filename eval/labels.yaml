@@ -1,0 +1,47 @@
+# Hand-labeled relevance sets for the 5 acceptance queries.
+# Method: pooled candidates (full engine top-20 + garment-channel top-10
+# + attribute-predicate matches) rendered as numbered contact sheets and
+# judged visually by a human, 2026-07-16. Binary relevance, strict reading
+# of each query (garment + color + context must all hold).
+labels:
+  q1:
+    - e636280e96f3863157a4398c92fc299e.jpg
+    - supp_yellow_raincoat_01.jpg
+    - supp_yellow_raincoat_00.jpg
+    - supp_yellow_raincoat_04.jpg
+    - supp_yellow_raincoat_02.jpg
+    - supp_yellow_raincoat_06.jpg
+  q2:
+    - supp_office_attire_01.jpg
+    - supp_office_attire_03.jpg
+    - cd0f34921f96592811ff3a3776fa0444.jpg
+    - supp_office_attire_02.jpg
+    - supp_red_tie_01.jpg
+    - supp_red_tie_03.jpg
+    - supp_office_attire_00.jpg
+    - supp_red_tie_00.jpg
+  q3:
+    - supp_park_casual_08.jpg
+    - d3288584fffb4caeb8a392304b09ce93.jpg
+  q4:
+    - 0229bef01efc25f915374d55f59cbfdd.jpg
+    - 82d90f72c9745665b559a423f5e4e101.jpg
+    - 9f2b43ca80f1efb145dc87cb63efbb85.jpg
+    - 0146a53e12d690914995248fb6872121.jpg
+    - e712b9ad744015f1208a2b6eee27afcf.jpg
+    - e1f4adf88b71b15a4aaa6a32c6fa0d4a.jpg
+    - 320930dcc25cc8552bba966eff2d06c4.jpg
+    - 8edb034e1536833519aa3ba46d0f8a4c.jpg
+    - fa6fe8a772afec21850eaf4cf5fc72fd.jpg
+    - b0c2003291bafdda48c2cc3c229dfda0.jpg
+    - a9241e7a983feabc10d4c1e548e9b286.jpg
+    - 1ca6fb4b937bb1f34797d3315266a546.jpg
+    - a2d2041ec86da596439a8fd74575ce0b.jpg
+  q5:
+    - supp_red_tie_01.jpg
+    - supp_red_tie_00.jpg
+    - supp_red_tie_03.jpg
+    - supp_red_tie_05.jpg
+    - supp_red_tie_13.jpg
+    - supp_red_tie_12.jpg
+    - supp_office_attire_02.jpg
