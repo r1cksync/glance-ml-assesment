@@ -36,10 +36,10 @@ embedding:
 
 extraction:
   backend: qwen2vl                   # qwen2vl | moondream | bedrock
-  max_retries: 2                     # JSON repair-retry budget per image
+  max_retries: 1                     # JSON repair-retry budget per image
   device: auto
   models:
-    qwen2vl:    { model_id: Qwen/Qwen2-VL-2B-Instruct, quant: 4bit, max_new_tokens: 320 }
+    qwen2vl:    { model_id: Qwen/Qwen2-VL-2B-Instruct, quant: 4bit, max_new_tokens: 420 }
     moondream:  { model_id: vikhyatk/moondream2, revision: "2025-01-09" }
     bedrock:    { model_id: us.anthropic.claude-haiku-4-5-20251001-v1:0 }  # needs account payment fix
 

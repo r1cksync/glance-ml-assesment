@@ -98,8 +98,37 @@ class AttributeExtractor(ABC):
                     return text[start:i + 1]
         raise ValueError("unbalanced JSON braces in output")
 
+    @staticmethod
+    def _salvage_truncated_json(text: str) -> dict | None:
+        """Best-effort recovery of a max_new_tokens-truncated JSON object: cut
+        back to the last complete value and append closers. Returns None if
+        nothing parseable emerges."""
+        start = text.find("{")
+        if start == -1:
+            return None
+        body = text[start:]
+        for cut in (len(body), body.rfind("}"), body.rfind('"')):
+            if cut is None or cut <= 0:
+                continue
+            base = body[:cut + 1] if body[cut - 1:cut] != "" else body[:cut]
+            # strip a trailing comma / partial token, then try closer suffixes
+            trimmed = base.rstrip().rstrip(",")
+            for suffix in ("", "}", "]}", "}]}", '"}]}', "}}", "]}}"):
+                try:
+                    obj = json.loads(trimmed + suffix)
+                    if isinstance(obj, dict):
+                        return obj
+                except Exception:  # noqa: BLE001
+                    continue
+        return None
+
     def _parse(self, raw: str) -> ImageAttributes:
-        data = json.loads(self._extract_json_block(raw))
+        try:
+            data = json.loads(self._extract_json_block(raw))
+        except Exception:
+            data = self._salvage_truncated_json(raw)
+            if data is None:
+                raise
         attrs = ImageAttributes.model_validate(data)
         # canonicalize into the shared lexicon so index-side terms join query-side
         # terms, and dedupe (small VLMs sometimes emit the same garment repeatedly)
