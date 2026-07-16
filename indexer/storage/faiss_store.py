@@ -220,6 +220,14 @@ class FaissStore(VectorStore):
             out.add(image_id)
         return out
 
+    def update_attributes(self, image_id: str, attributes: ImageAttributes) -> None:
+        record = self._images.get(image_id)
+        if record is None:
+            raise KeyError(f"image not indexed: {image_id}")
+        if not attributes.image_id:
+            attributes = attributes.model_copy(update={"image_id": image_id})
+        record["attributes"] = attributes
+
     def get_attributes(self, image_id: str) -> Optional[ImageAttributes]:
         record = self._images.get(image_id)
         return record["attributes"] if record is not None else None

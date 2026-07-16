@@ -101,6 +101,8 @@ ExecStartPre=/usr/local/bin/fashion-api-pull.sh
 ExecStartPre=-/usr/bin/docker rm -f api
 ExecStart=/usr/bin/docker run --rm --name api -p 80:8000 \
   --env-file /etc/fashion-api.env \
+  -v /var/lib/fashion-api/models:/models \
+  -v /var/lib/fashion-api/artifacts:/app/data/artifacts \
   --log-driver=awslogs \
   --log-opt awslogs-group=${log_group} \
   --log-opt awslogs-region=${aws_region} \

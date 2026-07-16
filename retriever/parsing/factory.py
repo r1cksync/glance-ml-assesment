@@ -20,8 +20,12 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 
-def build_parser(cfg: "Config") -> "QueryParser":
-    """Build the configured query parser (rule | bedrock), cached if enabled."""
+def build_parser(cfg: "Config", cache: "object | None" = None) -> "QueryParser":
+    """Build the configured query parser (rule | bedrock), cached if enabled.
+
+    ``cache`` overrides the default in-process cache with any ParseCache
+    implementation (the API layer passes its DynamoDB-backed cache here).
+    """
     backend = cfg.get_path("parsing.backend", "rule")
     if backend == "rule":
         from retriever.parsing.rule_parser import RuleParser
@@ -35,7 +39,10 @@ def build_parser(cfg: "Config") -> "QueryParser":
     else:
         raise ValueError(f"unknown parsing backend: {backend!r}")
 
-    if cfg.get_path("parsing.cache.enabled", False):
+    if cache is not None:
+        from retriever.parsing.base import CachedParser
+        parser = CachedParser(parser, cache)  # type: ignore[arg-type]
+    elif cfg.get_path("parsing.cache.enabled", False):
         from retriever.parsing.base import CachedParser, MemoryParseCache
         parser = CachedParser(parser, MemoryParseCache())
     log.info("query parser: %s", parser.name)

@@ -54,6 +54,7 @@ def build_engine(
     store: "Optional[VectorStore]" = None,
     with_reranker: bool = True,
     image_resolver: Optional[Callable[[str], "Image"]] = None,
+    parse_cache: Optional[object] = None,
 ) -> "SearchEngine":
     """Wire the full retrieval stack: parser, embedders, store, optional reranker.
 
@@ -79,7 +80,7 @@ def build_engine(
         store=store,
         garment_embedder=build_embedder(cfg, "garment"),
         scene_embedder=build_embedder(cfg, "scene"),
-        parser=build_parser(cfg),
+        parser=build_parser(cfg, cache=parse_cache),
         reranker=reranker,
         image_resolver=image_resolver or default_image_resolver(cfg),
         weights=dict(weights) if weights else None,

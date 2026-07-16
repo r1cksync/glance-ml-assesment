@@ -59,6 +59,11 @@ class VectorStore(ABC):
         """
 
     @abstractmethod
+    def update_attributes(self, image_id: str, attributes: ImageAttributes) -> None:
+        """Replace ONLY the attribute payload of an already-indexed image —
+        lets a better VLM re-extract attributes without re-embedding vectors."""
+
+    @abstractmethod
     def get_attributes(self, image_id: str) -> Optional[ImageAttributes]: ...
 
     @abstractmethod
