@@ -1,0 +1,37 @@
+# environments / caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.hf-cache/
+node_modules/
+.next/
+out/
+dist/
+
+# data & artifacts (seeded to S3, not git)
+data/
+*.zip
+*.faiss
+*.onnx
+
+# terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform.lock.hcl
+
+# secrets — never commit credentials
+.env
+.env.*
+*.pem
+**/credentials
+
+# assessment source docs (not part of the deliverable)
+prompt.txt
+task.txt
+
+# local scratch
+scratch/
+*.log

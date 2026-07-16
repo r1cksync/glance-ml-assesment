@@ -1,0 +1,91 @@
+# ── Fashion & Context Retrieval Engine — master config ──────────────────────
+# Every ML choice is a named, swappable backend. No AWS coupling in ML logic.
+
+app:
+  name: fashion-retrieval
+  region: us-east-1
+
+paths:
+  data_dir: data
+  images_dir: data/images            # extracted dataset
+  artifacts_dir: data/artifacts      # index shards, attribute payloads, eval outputs
+  hf_home: .hf-cache                 # model cache (kept off C: drive)
+
+dataset:
+  source_url: https://s3.amazonaws.com/ifashionist-dataset/images/val_test2020.zip
+  subset_size: 50                    # local dev subset (prove pipeline before full run)
+  seed: 42
+
+detection:
+  backend: yolos-fashionpedia        # region proposal fine-tuned on Fashionpedia classes
+  model_id: valentinafeve/yolos-fashionpedia
+  confidence_threshold: 0.35
+  max_regions: 8                     # keep top-N garment regions per image
+  min_area_frac: 0.005               # drop tiny fragments
+  device: auto                       # auto | cuda | cpu
+
+embedding:
+  garment_backend: fashion-clip      # fashion-clip | marqo-siglip  (benchmarked in eval)
+  scene_backend: clip-vit-b32        # whole-image context vector, kept distinct
+  batch_size: 16
+  device: auto
+  models:
+    fashion-clip:  { model_id: patrickjohncyh/fashion-clip,     dim: 512 }
+    marqo-siglip:  { model_id: Marqo/marqo-fashionSigLIP,       dim: 768 }
+    clip-vit-b32:  { model_id: openai/clip-vit-base-patch32,    dim: 512 }
+
+extraction:
+  backend: qwen2vl                   # qwen2vl | moondream | bedrock
+  max_retries: 2                     # JSON repair-retry budget per image
+  device: auto
+  models:
+    qwen2vl:    { model_id: Qwen/Qwen2-VL-2B-Instruct, quant: 4bit, max_new_tokens: 512 }
+    moondream:  { model_id: vikhyatk/moondream2, revision: "2025-01-09" }
+    bedrock:    { model_id: us.anthropic.claude-haiku-4-5-20251001-v1:0 }  # needs account payment fix
+
+storage:
+  backend: faiss                     # faiss | opensearch | atlas   (ABC-swappable)
+  faiss:
+    index_type: flat_ip              # exact at 1K scale; hnsw for 1M (see README scaling math)
+  opensearch:
+    endpoint: ""                     # filled by terraform output when enabled
+    index_prefix: fashion
+  atlas:
+    uri_env: ATLAS_URI               # never in code / config
+    db: fashion
+
+parsing:
+  backend: rule                      # rule | bedrock  (rule = deterministic lexicon parser)
+  bedrock_model_id: us.anthropic.claude-haiku-4-5-20251001-v1:0
+  cache:
+    enabled: true
+    backend: memory                  # memory | dynamodb (dynamodb wired in API layer only)
+
+search:
+  candidates_k: 50                   # ANN candidates fed to rerank
+  final_k: 10
+  weights:                           # fusion weights — tune & defend (see eval ablations)
+    garment: 0.55
+    scene: 0.25
+    attribute: 0.20
+  prefilter:
+    enabled: true
+    min_candidates: 12               # if hard conjunctive filter yields fewer, soften:
+    soft_fallback: true              # filter becomes a scoring feature instead of a gate
+
+rerank:
+  enabled: true
+  backend: blip-itm                  # cross-modal ITM head over top candidates
+  model_id: Salesforce/blip-itm-base-coco
+  top_n: 50
+  weight: 0.35                       # blend: final = (1-w)*fusion + w*itm
+
+serving:                             # API-side inference (CPU, int8 ONNX)
+  onnx_dir: data/artifacts/onnx
+  prefer_onnx: true
+
+eval:
+  queries_file: eval/queries.yaml
+  labels_file: eval/labels.yaml
+  k_values: [1, 5, 10]
+  results_dir: eval/results
