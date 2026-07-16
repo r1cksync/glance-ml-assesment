@@ -175,11 +175,35 @@ detection revokes the whole token family** (stolen-token defense) · Argon2id
 password hashing · role claim (`user`/`admin`) enforced by FastAPI dependencies ·
 rate limits on auth and search routes · `iss`/`aud`/`exp` all validated (PyJWT).
 
+## Dataset
+
+1,158 Fashionpedia val2020 images **+ 45 CC-licensed supplements** fetched via
+the CLIP-filtered pipeline in `scripts/supplement_data.py` (Wikimedia Commons +
+Openverse; per-image source/author/license recorded in
+`data/supplement_manifest.json`, mirrored to S3). Supplements were added
+because Fashionpedia val is runway-editorial: the whole corpus contained
+exactly **one necktie and zero yellow raincoats**, while 2 of the 5 acceptance
+queries require them — the assignment's "supplement if diversity is thin"
+clause applied. Categories added: yellow raincoats (7), office attire (7),
+park-bench scenes (15), city-casual (6), red tie + white shirt (14, after
+dropping 4 non-photographic CLIP false-positives by hand).
+
 ## Evaluation
 
-Five acceptance queries (attribute / contextual / complex-semantic /
-style-inference / compositional), hand-labeled relevance sets, Recall@{1,5,10},
-MRR, nDCG@10, plus the ablation ladder — vanilla CLIP → FashionCLIP whole-image
-→ region-based → +attribute filter → +rerank — and the FashionCLIP vs
-marqo-fashionSigLIP embedder benchmark. Results: [eval/results/](eval/results/).
-Latency: p50/p95 measured at 1K vectors + a math-backed 1M-image projection.
+Hand-labeled relevance sets (pooled candidates → contact sheets → human
+judgment; 36 positives across the 5 acceptance queries). Full detail in
+[eval/results/](eval/results/):
+
+| variant | R@1 | R@5 | R@10 | MRR | nDCG@10 |
+|---|---|---|---|---|---|
+| vanilla CLIP (whole image) | 0.062 | 0.261 | 0.451 | 0.549 | 0.413 |
+| FashionCLIP (whole image) | 0.087 | 0.241 | 0.606 | 0.633 | 0.494 |
+| FashionCLIP (garment regions) | 0.158 | 0.326 | 0.510 | 0.707 | 0.504 |
+| + attribute prefilter & fusion | 0.102 | 0.422 | 0.683 | 0.840 | 0.671 |
+| **full + BLIP-ITM rerank** | **0.202** | **0.489** | 0.659 | **1.000** | **0.760** |
+
+The full system puts a relevant image at rank 1 for **every** acceptance query
+(MRR 1.0) and nearly doubles nDCG@10 over vanilla CLIP. Embedder benchmark
+(FashionCLIP vs marqo-fashionSigLIP): `eval/results/embedder_benchmark.md`.
+Latency: **p50 811 ms / p95 988 ms** measured end-to-end on the live deployment
++ a math-backed 1M-image projection in `eval/results/latency.md`.
