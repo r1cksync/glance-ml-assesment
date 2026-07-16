@@ -36,7 +36,46 @@ logging.basicConfig(level=logging.INFO, format="%(levelname).1s %(message)s")
 log = logging.getLogger("supplement")
 
 COMMONS_API = "https://commons.wikimedia.org/w/api.php"
-HEADERS = {"User-Agent": "fashion-retrieval-assessment/1.0 (student project)"}
+OPENVERSE_API = "https://api.openverse.org/v1/images/"
+# Wikimedia UA policy: descriptive agent + contact. Image host rate-limits
+# bulk fetches — downloads are paced and honor Retry-After.
+HEADERS = {"User-Agent":
+           "fashion-retrieval-student-assessment/1.0 "
+           "(contact: sagnik23102@iiitnr.edu.in; one-time dataset supplement)"}
+DOWNLOAD_DELAY_S = 4.0
+
+
+def paced_get(url: str, timeout: int = 30) -> "requests.Response":
+    """GET with 429/Retry-After handling (single retry) + fixed pacing."""
+    r = requests.get(url, headers=HEADERS, timeout=timeout)
+    if r.status_code == 429:
+        wait = min(float(r.headers.get("Retry-After", 15)), 60.0)
+        log.info("429 — backing off %.0fs", wait)
+        time.sleep(wait)
+        r = requests.get(url, headers=HEADERS, timeout=timeout)
+    time.sleep(DOWNLOAD_DELAY_S)
+    return r
+
+
+def openverse_search(query: str, limit: int = 20) -> list[dict]:
+    """Keyless Openverse search (CC images across Flickr etc.)."""
+    r = requests.get(OPENVERSE_API, params={
+        "q": query, "license_type": "all-cc", "page_size": limit,
+        "filter_dead": "false"}, headers=HEADERS, timeout=30)
+    r.raise_for_status()
+    out = []
+    for item in r.json().get("results", []):
+        url = item.get("thumbnail") or item.get("url")
+        if not url:
+            continue
+        out.append({
+            "title": item.get("title", ""),
+            "thumb_url": url,
+            "page_url": item.get("foreign_landing_url", ""),
+            "license": item.get("license", "cc"),
+            "artist": item.get("creator", "unknown") or "unknown",
+        })
+    return out
 
 #: category -> (commons search queries, CLIP validation prompt, similarity floor)
 CATEGORIES: dict[str, tuple[list[str], str, float]] = {
@@ -119,13 +158,15 @@ def main() -> None:
         candidates: list[dict] = []
         seen = set()
         for q in queries:
-            try:
-                for c in commons_search(q):
-                    if c["thumb_url"] not in seen:
-                        seen.add(c["thumb_url"])
-                        candidates.append(c)
-            except Exception as e:  # noqa: BLE001
-                log.warning("%s: search %r failed: %s", cat, q, e)
+            for source in (openverse_search, commons_search):
+                try:
+                    for c in source(q):
+                        if c["thumb_url"] not in seen:
+                            seen.add(c["thumb_url"])
+                            candidates.append(c)
+                except Exception as e:  # noqa: BLE001
+                    log.warning("%s: %s %r failed: %s", cat,
+                                source.__name__, q, e)
             time.sleep(1.0)
         log.info("%s: %d candidates", cat, len(candidates))
         if args.dry_run:
@@ -136,15 +177,16 @@ def main() -> None:
         pvec = embedder.embed_text(prompt)
         for c in candidates:
             try:
-                r = requests.get(c["thumb_url"], headers=HEADERS, timeout=30)
+                r = paced_get(c["thumb_url"])
                 r.raise_for_status()
                 img = Image.open(io.BytesIO(r.content)).convert("RGB")
+                if min(img.size) < 300:
+                    continue
             except Exception:  # noqa: BLE001
                 continue
             sim = float(embedder.embed_image(img) @ pvec)
             if sim >= floor:
                 scored.append((sim, c, img))
-            time.sleep(0.3)
         scored.sort(key=lambda t: t[0], reverse=True)
         kept = scored[: args.per_category - len(existing)]
         for i, (sim, c, img) in enumerate(kept):

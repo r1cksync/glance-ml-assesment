@@ -53,6 +53,18 @@ _SCENE_PROMPTS: dict[str, str] = {
 }
 
 
+def _contains(outer: tuple, inner: tuple, min_overlap: float = 0.7) -> bool:
+    """True when >= min_overlap of `inner`'s area lies inside `outer` and the
+    inner region is meaningfully smaller (nested accent like a tie in a shirt)."""
+    ox1, oy1, ox2, oy2 = outer
+    ix1, iy1, ix2, iy2 = inner
+    inter = (max(0.0, min(ox2, ix2) - max(ox1, ix1))
+             * max(0.0, min(oy2, iy2) - max(oy1, iy1)))
+    inner_area = max(1e-6, (ix2 - ix1) * (iy2 - iy1))
+    outer_area = (ox2 - ox1) * (oy2 - oy1)
+    return inter / inner_area >= min_overlap and inner_area < 0.8 * outer_area
+
+
 class ZeroShotAttributeInferencer:
     """Batch attribute upgrade using stored vectors + crop pixel statistics."""
 
@@ -82,9 +94,14 @@ class ZeroShotAttributeInferencer:
         garments: list[GarmentAttribute] = []
         for region in regions:
             vec = garment_vecs.get(region.region_id)
+            # mask sibling regions nested inside this bbox (e.g. the tie inside
+            # a shirt crop) so their color cannot hijack the k-means pick
+            siblings = [r.bbox for r in regions
+                        if r.region_id != region.region_id
+                        and _contains(region.bbox, r.bbox)]
             garments.append(GarmentAttribute(
                 type=region.label,
-                color=self._dominant_color(image, region.bbox) or "",
+                color=self._dominant_color(image, region.bbox, siblings) or "",
                 formality=self._zero_shot(vec, self._formality_mat,
                                           self._formality_keys) or "unknown",
                 material=self._material(vec),
@@ -124,15 +141,30 @@ class ZeroShotAttributeInferencer:
 
     @staticmethod
     def _dominant_color(image: "Image", bbox: tuple[float, float, float, float],
+                        mask_boxes: Optional[list] = None,
                         k: int = 3) -> Optional[str]:
-        """Saturation-weighted k-means dominant color of the crop's center."""
+        """Chroma-weighted k-means dominant color of the crop's center,
+        excluding pixels that belong to nested sibling regions."""
         x1, y1, x2, y2 = (int(v) for v in bbox)
         if x2 - x1 < 4 or y2 - y1 < 4:
             return None
         # central 70% of the crop, shrunk — cheap and background-resistant
         mx, my = int((x2 - x1) * 0.15), int((y2 - y1) * 0.15)
-        crop = image.crop((x1 + mx, y1 + my, x2 - mx, y2 - my)).resize((32, 32))
-        px = np.asarray(crop.convert("RGB"), dtype=np.float32).reshape(-1, 3)
+        cx1, cy1, cx2, cy2 = x1 + mx, y1 + my, x2 - mx, y2 - my
+        crop = image.crop((cx1, cy1, cx2, cy2)).resize((32, 32))
+        arr = np.asarray(crop.convert("RGB"), dtype=np.float32)
+        keep = np.ones((32, 32), dtype=bool)
+        for b in (mask_boxes or []):
+            sx = 32.0 / max(cx2 - cx1, 1)
+            sy = 32.0 / max(cy2 - cy1, 1)
+            bx1 = int(np.clip((b[0] - cx1) * sx, 0, 32))
+            by1 = int(np.clip((b[1] - cy1) * sy, 0, 32))
+            bx2 = int(np.clip((b[2] - cx1) * sx, 0, 32))
+            by2 = int(np.clip((b[3] - cy1) * sy, 0, 32))
+            keep[by1:by2, bx1:bx2] = False
+        px = arr[keep].reshape(-1, 3)
+        if len(px) < 32:  # nearly everything masked — fall back to full crop
+            px = arr.reshape(-1, 3)
 
         # tiny k-means (numpy, fixed seed, 8 iters is plenty at 1K points)
         rng = np.random.default_rng(0)
@@ -146,11 +178,12 @@ class ZeroShotAttributeInferencer:
                     centers[j] = sel.mean(0)
         counts = np.bincount(assign, minlength=k).astype(np.float32)
 
-        # weight cluster size by chroma so vivid garment color beats
-        # large desaturated background/skin regions
+        # weight cluster size by chroma so vivid garment color beats large
+        # desaturated background — but not so hard that a genuinely white/black
+        # garment loses to a small colorful accent
         maxc, minc = centers.max(1), centers.min(1)
         sat = (maxc - minc) / np.clip(maxc, 1e-6, None)
-        weights = counts * (0.25 + sat)
+        weights = counts * (0.45 + 0.6 * sat)
         c = centers[int(weights.argmax())]
         hexcode = f"#{int(c[0]):02x}{int(c[1]):02x}{int(c[2]):02x}"
         return nearest_color(hexcode)

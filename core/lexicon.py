@@ -41,6 +41,38 @@ COLOR_ALIASES: dict[str, str] = {
 }
 
 
+# Perceptually-adjacent canonical colors. QUERY predicates expand through this
+# table (index-side colors stay canonical) so a dark-red tie extracted as
+# "maroon" still satisfies a "red tie" query. Deliberately conservative.
+COLOR_NEIGHBORS: dict[str, list[str]] = {
+    "red": ["maroon"],
+    "maroon": ["red", "brown"],
+    "orange": ["gold"],
+    "yellow": ["gold", "olive"],
+    "gold": ["yellow", "orange"],
+    "olive": ["khaki", "green", "yellow"],
+    "green": ["olive", "teal"],
+    "teal": ["green", "blue"],
+    "blue": ["navy", "teal"],
+    "navy": ["blue"],
+    "purple": ["pink"],
+    "pink": ["purple"],
+    "brown": ["maroon", "khaki", "beige"],
+    "beige": ["cream", "khaki", "brown"],
+    "cream": ["white", "beige"],
+    "white": ["cream", "silver"],
+    "silver": ["gray", "white"],
+    "gray": ["silver"],
+    "khaki": ["beige", "olive", "brown"],
+    "black": ["navy"],
+}
+
+
+def expand_color(color: str) -> list[str]:
+    """Canonical color -> [itself + perceptual neighbors] for query predicates."""
+    return [color] + COLOR_NEIGHBORS.get(color, [])
+
+
 def canonical_color(name: str | None, hex_code: str | None = None) -> str | None:
     """Map an arbitrary color mention to the canonical palette.
 

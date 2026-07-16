@@ -33,7 +33,7 @@ _MAX_IMAGE_SIDE = 512
 #: processor default on small GPUs, with negligible attribute-quality loss
 #: at fashion-photo scales.
 _MIN_PIXELS = 128 * 28 * 28
-_MAX_PIXELS = 448 * 448
+_MAX_PIXELS = 384 * 384
 
 
 class Qwen2VLExtractor(AttributeExtractor):

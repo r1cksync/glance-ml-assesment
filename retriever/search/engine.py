@@ -21,6 +21,7 @@ from core.lexicon import (
     canonical_garment,
     canonical_material,
     canonical_scene,
+    expand_color,
 )
 from core.schemas import (
     AttributePredicate,
@@ -54,7 +55,8 @@ def predicates_from_parsed(parsed: ParsedQuery
         if not t and not c:
             continue
         required.append(AttributePredicate(
-            types=[t] if t else [], colors=[c] if c else []))
+            types=[t] if t else [],
+            colors=expand_color(c) if c else []))  # neighbor-tolerant on query side
 
     excluded: list[AttributePredicate] = []
     for n in parsed.negations:
