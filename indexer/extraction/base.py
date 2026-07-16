@@ -31,7 +31,7 @@ EXTRACTION_PROMPT = """You are a fashion attribute extractor. Look at the image 
   "lighting": "<bright|dim|natural|artificial|studio>"
 }
 
-List every clearly visible garment worn by the main person (max 6). Use lowercase. Output valid JSON only."""
+List every clearly visible garment worn by the main person (max 6). List each distinct garment exactly ONCE — never repeat a garment. Use lowercase. Output valid JSON only."""
 
 REPAIR_PROMPT = """Your previous output was not valid JSON for the required schema. Error: {error}
 
@@ -101,8 +101,10 @@ class AttributeExtractor(ABC):
     def _parse(self, raw: str) -> ImageAttributes:
         data = json.loads(self._extract_json_block(raw))
         attrs = ImageAttributes.model_validate(data)
-        # canonicalize into the shared lexicon so index-side terms join query-side terms
+        # canonicalize into the shared lexicon so index-side terms join query-side
+        # terms, and dedupe (small VLMs sometimes emit the same garment repeatedly)
         garments: list[GarmentAttribute] = []
+        seen: set[tuple] = set()
         for g in attrs.garments:
             ctype = canonical_garment(g.type)
             if ctype is None:
@@ -110,6 +112,16 @@ class AttributeExtractor(ABC):
             g.type = ctype
             g.color = canonical_color(g.color, g.color_hex) or g.color
             g.material = canonical_material(g.material)
+            key = (g.type, g.color, g.formality, g.material)
+            if key in seen:
+                continue
+            seen.add(key)
             garments.append(g)
         attrs.garments = garments
+        # scene_type sanity: trust the lexicon over the VLM's coarse guess when
+        # the free-text scene names a known place ("on a runway" -> studio)
+        from core.lexicon import canonical_scene  # local import: avoids cycle at module load
+        derived = canonical_scene(attrs.scene)
+        if derived and attrs.scene_type in ("other", "indoor", "outdoor"):
+            attrs.scene_type = derived
         return attrs

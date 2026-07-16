@@ -24,6 +24,13 @@ data "aws_subnets" "default" {
     name   = "default-for-az"
     values = ["true"]
   }
+
+  # t3 instances are not offered in every AZ (us-east-1e lacks them);
+  # restrict to AZs that carry the whole t3 family.
+  filter {
+    name   = "availability-zone"
+    values = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]
+  }
 }
 
 # Latest Amazon Linux 2023 x86_64 (standard, not -minimal — the 2023* pattern
