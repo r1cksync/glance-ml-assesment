@@ -279,6 +279,9 @@ class SearchEngine:
                     kept.append(img)
                 except Exception as e:  # noqa: BLE001 — a missing file shouldn't kill the query
                     log.warning("image_resolver failed for %s: %s", img, e)
+            if not images and top:
+                log.warning("rerank requested but no candidate images resolvable "
+                            "(image files not available locally?) — skipping rerank")
             if images:
                 probs = self.reranker.score(rerank_text, images)
                 rerank_scores = dict(zip(kept, (float(p) for p in probs)))

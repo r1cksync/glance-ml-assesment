@@ -40,7 +40,11 @@ IMAGE_BASE_URL=
 CORS_ORIGINS=${cors_origins}
 AWS_REGION=${aws_region}
 AWS_DEFAULT_REGION=${aws_region}
-USE_RERANK=true
+# Rerank is a GPU-tier quality stage: BLIP-ITM over 50 candidates costs
+# 15-40s/query on a t3.small CPU (and needs local image files). It stays in
+# the offline eval/ablation story; API exposes use_rerank per-request for
+# environments that can afford it.
+USE_RERANK=false
 DEMO_USER_EMAIL=demo@fashionretrieval.dev
 DEMO_USER_PASSWORD=${demo_password}
 %{ if admin_email != "" }
